@@ -1,0 +1,104 @@
+					 – BUILD AND SURVIVE  -
+
+Implementarea temei a fost realizata in folderul Laborator5.
+Cuprins:
+1) Controlul personajului prin intermediul tastelor W, A, S, D
+2) Rotatia personajului dupa directia mouse-ului
+3) Lansarea celor 3 tipuri de proiectile
+4) Generarea inamicilor si traseul acestora
+5) Desenarea vietilor personajului
+6) Moartea personajului si a inamicilor
+7) Minimap
+8) Proiectilele turnurilor si coliziunea gloantelor cu inamicii
+
+1) CONTROLUL PERSONAJULUI PRIN INTERMEDIUL TASTELOR W, A, S, D
+In fata: personajul se misca prin intermediul tastei “W”, ce a fost implementata
+ in metoda OnInputUpdate(), prin intermediul functiei MoveForward din clasa Camera.
+In spate: personajul se misca prin intermediul tastei “S”, ce a fost implementata
+ in metoda OnInputUpdate(), prin intermediul functiei MoveForward din clasa Camera.
+La dreapta: personajul se misca prin intermediul tastei “D”, ce a fost implementata
+ in metoda OnInputUpdate(), prin intermediul functiei TranslateRight din clasa Camera.
+La stanga: personajul se misca prin intermediul tastei “S”, ce a fost implementata
+ in metoda OnInputUpdate(), prin intermediul functiei TranslateRight din clasa 
+Camera.
+
+2) ROTATIA PERSONAJULUI DUPA DIRECTIA MOUSE-ULUI
+In metoda OnMOuseMove(), am calculat unghiul pe care il face mouse-ul, adica 
+unghiul camerei, pe care l-am atribuit unghiului personajului. Am realizat o 
+structura pentru Player, care are si unghiul ca proprietate si astfel, cand am 
+desenat personajul in DrawScene(), am folosit pentru metoda rotate acest unghi.
+
+3) LANSAREA CELOR 3 TIPURI DE PROIECTILE
+Am realizat cate o structura  pentru fiecare tip de proiectil si functii separate
+ pentru fiecare tip de tragere:  PistolShooting(),RifleShooting() si 
+GrenadeShooting(). Astfel, am cate un vector pentru fiecare tip de proiectil, le
+ calculez coordinatele x si z, iar in momentul in care au atins o anumita distanta,
+ le sterg din vector.
+Cele 3 tipuri de proiectile se schimba in felul urmator:
+tasta 1 =>  pistol si se scad 2 vieti
+tasta 2 => pusca, se schimba perspectiva  si se scade o viata 
+tasta 3 => grenade cu bolta  si se scad 3 vieti
+Toate aceste 3 conditii sunt implementate in metoda OnInputUpdate() si se seteaza
+ type-ul fiecarui glont, in functie de care se realizeaza perspectiva camerei, 
+scalarea jucatorului si se deseneaza gloantele.
+
+4) GENERAREA INAMICILOR SI TRASEUL ACESTORA
+Am realizat structura Wolf pentru inamici si pentru a realiza miscarea in forma 
+de Z,  am stabilit un interval in care sa se miste pe orizontala, respective pe 
+diagonala, crescand la fiecare Frame x-ul pentru orizontala si x-ul si z-ul pentru
+ diagonala. In cazul in care un inamic ajuns la capatul traseului, player-ul 
+pierde o viata si inamicul dispare.
+ De asemenea, in Update(), am implementat codul prin care inamicii apar la 5 
+secunde, iar dupa ce apar 10, inamicii sunt generate la fiecare 3 secunde si au 
+de 2 ori mai multe vieti. Desenarea lor se afla in DrawScene().
+
+5) DESENAREA VIETILOR PERSONAJULUI
+In metoda DrawScene() am parcurs fiecare viata a perosnajului si fiecare dintre
+ ele realizeaza cate o rotatie in jurul personajului, astfel:
+Prima viata se rotaeste pe OZ, prin apelarea metodei RotateOZ din Transform3D;
+A doua viata se roteste pe OY, prin apelarea metodei RotateOY din Transform3D;
+A treia viata se roteste pe OX, prin apelarea metodei RotateOX din Transform3D;
+Unghiul cu care se rotesc vietile creste la fiecar Frame.
+Astfel, cand un inamic ajunge la final si vietile jucatorului scad, se deseneaza
+ doar vietile care au mai ramas.
+
+6) MOARTEA PERSONAJULUI SI A INAMICILOR
+Coliziunea tuturor gloantelor cu inamicii a fost realizata in metodele 
+PistolWolvesCollision(), RifleWolvesCollision() si GrenadeWolvesCollision(), in 
+care calculam distanta dintre cele doua obiecte si in cazul in care era <=  cu o
+ distanta setata de mine, atunci scadeam viata inamicilor si glontul.
+In Update(), parcurg din nou vectorul de inamici(lupi) si daca nu mai au nicio 
+viata, atunci le miscorez unghiul, iar daca a ajuns la o anumita valoare, sterg 
+inamicul. Astfel, in DrawScene(), rotesc inamicul cu acest unghi pentru a da 
+senzatia de animatie.
+Acelasi lucru de intampla si la personaj: el isi pierde vietile cand inamicii au
+ ajuns la capat, iar daca are 0 vieti, atunci ii scad unghiul pana ajunge la o 
+anumita valoare, iar atunci dispare.
+
+7) MINIMAP
+Pentru a realiza harta, mi-am declarat o noua camera pentru minimap, am setat-o,
+ iar ulterior am realizat si matricea de proiectie ortogonala.
+In metoda Update() am setat rezolutia si viewPort-ul, iar pentru desenare am 
+implementat o noua functie de randare facuta pentru camera hartii si pentru 
+matricea de proiectie ortogonala a hartii.
+Am mai realizat si o functie de desenare a obiectelor, in care am desenat personajul,
+ turnurile si inamicii, folosind cuburi si metoda de randare facuta special pentru
+ minimap.
+
+8) PROIECTILELE TURNURILOR SI COLIZIUNEA GLAONTELOR CU INAMICII
+
+Am realizat o functie, TowerShooting() in care pentru fiecare turn si pentru 
+fiecare inamic, verificam daca inamicul respectiv a ajuns in zona de tragere a 
+urnurilor. Daca da, atunci calculam unghiul spre care trebuie sa se indrepte 
+turnurile si parcurgem vectorul de proiectile al fiecarui turn. Astfel, in functie
+ de pozitia turnului, setam unghiul sub care trebuie sa apara proiectilele 
+fiecarui turn.
+De asemenea, setam coordonatele proiectilelor si le desenam.
+In metoda Update(), am parcurs fiecare turn si la fiecare 5 secunde am adaugat un
+ proiectil in vectorul de proiectile al fiecaruia.
+
+Pentru coliziunea dintre gloantele turnurilor si inamici am implementat metoda 
+TowersWolvesCollicion() in care pentru fiecare turn, am parcurs vectorii de inamici
+ si de gloante si am calculat distanta dintre inamici si gloante. Daca aceasta 
+este aproape de o valoare setata de mine, atunci miscorez vioata inamicilor la 
+jumatate si sterg proiectilul, urmand ca inamicul sa moara printr-o animatie.
